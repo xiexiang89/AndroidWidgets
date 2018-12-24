@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="default_thumb_padding">3dp</dimen>
+    <color name="default_checked_color">#00af50</color>
+    <color name="default_unchecked_color">#a1a1a1</color>
+    <dimen name="default_track_radius">30dp</dimen>
 </resources>

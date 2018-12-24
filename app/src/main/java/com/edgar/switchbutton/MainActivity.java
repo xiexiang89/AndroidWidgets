@@ -2,7 +2,6 @@ package com.edgar.switchbutton;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
@@ -14,7 +13,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final SwitchButton switchButton = findViewById(R.id.switch_btn);
         switchButton.setChecked(false);
-        switchButton.setClickable(true);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

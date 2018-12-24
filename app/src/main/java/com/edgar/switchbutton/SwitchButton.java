@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
 import android.view.ViewConfiguration;
@@ -28,7 +30,13 @@ public class SwitchButton extends CompoundButton {
     private static final int TOUCH_MODE_DRAGGING = 2;
 
     private Drawable mThumbDrawable;
-    private Drawable mTrackDrawable;
+    private GradientDrawable mTrackDrawable;
+    private GradientDrawable mTrackCheckDrawable;
+    private int mTrackWidth;
+    private int mTrackHeight;
+    private int mUnCheckColor;
+    private int mCheckColor;
+    private int mTrackRadius;
     private int mThumbPadding;
     private float mLastTouchX;
     private float mLastTouchY;
@@ -50,28 +58,53 @@ public class SwitchButton extends CompoundButton {
         Resources res = getResources();
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SwitchButton, defStyleAttr,0);
         mThumbDrawable = ta.getDrawable(R.styleable.SwitchButton_android_thumb);
-        mTrackDrawable = ta.getDrawable(R.styleable.SwitchButton_android_track);
-        mThumbPadding = ta.getDimensionPixelOffset(R.styleable.SwitchButton_thumbPadding,res.getDimensionPixelOffset(R.dimen.default_thumb_padding));
+        mTrackWidth = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackWidth,0);
+        mTrackHeight = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackHeight,0);
+        mUnCheckColor = ta.getColor(R.styleable.SwitchButton_track_uncheck_color,res.getColor(R.color.default_unchecked_color));
+        mCheckColor = ta.getColor(R.styleable.SwitchButton_track_check_color, res.getColor(R.color.default_checked_color));
+        mTrackRadius = ta.getDimensionPixelOffset(R.styleable.SwitchButton_track_radius, res.getDimensionPixelOffset(R.dimen.default_track_radius));
+        mThumbPadding = ta.getDimensionPixelOffset(R.styleable.SwitchButton_thumbPadding,
+                res.getDimensionPixelOffset(R.dimen.default_thumb_padding));
         ta.recycle();
         final ViewConfiguration config = ViewConfiguration.get(context);
         mTouchSlop = config.getScaledTouchSlop();
-        mThumbDrawable.setCallback(this);
-        mTrackDrawable.setCallback(this);
+        mTrackDrawable = createTrackDrawable(mUnCheckColor);
+        mTrackCheckDrawable = createTrackDrawable(mCheckColor);
+        setDrawableCallback(mThumbDrawable);
+        setDrawableCallback(mTrackDrawable);
+        setDrawableCallback(mTrackCheckDrawable);
+        mTrackCheckDrawable.setAlpha(0);
+        setClickable(true);
+    }
+
+    private GradientDrawable createTrackDrawable(@ColorInt int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(color);
+        drawable.setSize(mTrackWidth,mTrackHeight);
+        drawable.setCornerRadius(mTrackRadius);
+        return drawable;
+    }
+
+    private void setDrawableCallback(Drawable drawable) {
+        if (drawable != null) {
+            drawable.setCallback(this);
+        }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        final int trackWidth = mTrackDrawable.getIntrinsicWidth();
-        final int trackHeight = mTrackDrawable.getIntrinsicHeight();
+        final int trackWidth = mTrackWidth;
+        final int trackHeight = mTrackHeight;
         final int thumbWidth = getThumbWidth();
         final int thumbHeight = getThumbHeight();
         int height = Math.max(thumbHeight,trackHeight);
         setMeasuredDimension(trackWidth, height);
         int thumbTop = (trackHeight - thumbHeight)/2;
-        mThumbPosition = isChecked() ? getSwitchLeft() : mThumbPadding;
+        mThumbPosition = isChecked() ? getSwitchEndLeft() : mThumbPadding;
         mThumbDrawable.setBounds(mThumbPosition,thumbTop,mThumbPosition + thumbWidth, thumbTop + thumbHeight);
         mTrackDrawable.setBounds(0,0,trackWidth,trackHeight);
+        mTrackCheckDrawable.setBounds(mTrackDrawable.copyBounds());
     }
 
     private int getThumbWidth() {
@@ -95,11 +128,15 @@ public class SwitchButton extends CompoundButton {
         return x > thumbLeft && x < thumbRight && y > thumbTop && y < thumbBottom;
     }
 
-    private int getAvailableWidth() {
-        return getMeasuredWidth() - mThumbPadding*2 - getThumbWidth();
+    private int getHorizontalTotalPadding() {
+        return mThumbPadding * 2;
     }
 
-    private int getSwitchLeft() {
+    private int getAvailableWidth() {
+        return getMeasuredWidth() - mThumbPadding*2 - getThumbWidth()/2;
+    }
+
+    private int getSwitchEndLeft() {
         return getMeasuredWidth() - mThumbPadding - getThumbWidth();
     }
 
@@ -150,7 +187,7 @@ public class SwitchButton extends CompoundButton {
                         break;
                     }
                     case TOUCH_MODE_DRAGGING: {
-                        startDrag(event.getX());
+                        startDrag(event.getX(), event.getY());
                         return true;
                     }
                 }
@@ -169,18 +206,19 @@ public class SwitchButton extends CompoundButton {
         return super.onTouchEvent(event);
     }
 
-    private void startDrag(float x) {
+    private void startDrag(float x, float y) {
         final float thumbScrollOffset = x - mLastTouchX;
         int newPosition = (int) (thumbScrollOffset+mThumbDrawable.getBounds().left);
         if (newPosition < mThumbPadding) {
             newPosition = mThumbPadding;
         }
-        final int switchLeft = getSwitchLeft();
-        if (newPosition > switchLeft) {
-            newPosition = switchLeft;
+        final int switchEndLeft = getSwitchEndLeft();
+        if (newPosition > switchEndLeft) {
+            newPosition = switchEndLeft;
         }
-        setThumbPosition(newPosition);
+        setThumbPosition(newPosition,Math.abs(x-mLastTouchX) > Math.abs(y-mLastTouchY));
         mLastTouchX = x;
+        mLastTouchY = y;
     }
 
     private void stopDrag(MotionEvent ev) {
@@ -211,15 +249,15 @@ public class SwitchButton extends CompoundButton {
         cancel.recycle();
     }
 
-    private void animationChecked(boolean checked) {
-        final int targetPosition = checked ? getSwitchLeft() : mThumbPadding;
+    private void animationChecked(final boolean checked) {
+        final int targetPosition = checked ? getSwitchEndLeft() : mThumbPadding;
         if (mThumbAnimation == null) {
             mThumbAnimation = ValueAnimator.ofInt();
             mThumbAnimation.setDuration(ANIMATION_DURATION);
             mThumbAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    setThumbPosition((Integer) animation.getAnimatedValue());
+                    setThumbPosition((Integer) animation.getAnimatedValue(),true);
                 }
             });
         }
@@ -227,17 +265,22 @@ public class SwitchButton extends CompoundButton {
         mThumbAnimation.start();
     }
 
-    private void setThumbPosition(int position) {
+    private void setThumbPosition(int position, boolean changeAlpha) {
         mThumbPosition = position;
         final Rect bounds = mThumbDrawable.getBounds();
         mThumbDrawable.setBounds(position,bounds.top,position+getThumbWidth(),bounds.bottom);
+        if (changeAlpha) {
+            int width = getMeasuredWidth() - getHorizontalTotalPadding() - getThumbWidth();
+            float alpha = Math.max(0f,Math.min((float) bounds.left/width,1f));
+            mTrackCheckDrawable.setAlpha((int) (255*alpha));
+        }
     }
 
     @Override
     protected boolean verifyDrawable(@NonNull Drawable who) {
         boolean verify = super.verifyDrawable(who);
         if (!verify) {
-            verify = who == mThumbDrawable || who == mTrackDrawable;
+            verify = who == mThumbDrawable || who == mTrackDrawable || who == mTrackCheckDrawable;
         }
         return verify;
     }
@@ -246,6 +289,7 @@ public class SwitchButton extends CompoundButton {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mTrackDrawable.draw(canvas);
+        mTrackCheckDrawable.draw(canvas);
         mThumbDrawable.draw(canvas);
     }
 }

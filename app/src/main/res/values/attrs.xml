@@ -2,7 +2,11 @@
 <resources>
     <declare-styleable name="SwitchButton">
         <attr name="android:thumb"/>
-        <attr name="android:track"/>
+        <attr name="trackWidth" format="dimension|reference"/>
+        <attr name="trackHeight" format="dimension|reference"/>
+        <attr name="track_uncheck_color" format="color|reference"/>
+        <attr name="track_check_color" format="color|reference"/>
+        <attr name="track_radius" format="dimension|reference"/>
         <attr name="thumbPadding" format="dimension|reference"/>
     </declare-styleable>
 </resources>

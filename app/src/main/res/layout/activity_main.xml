@@ -10,7 +10,11 @@
         android:id="@+id/switch_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:trackWidth="55dp"
+        app:trackHeight="28dp"
         android:thumb="@drawable/thumb"
-        android:track="@drawable/track"
+        app:track_uncheck_color="#a1a1a1"
+        app:track_check_color="#00af50"
+        app:track_radius="@dimen/default_track_radius"
         android:layout_gravity="center"/>
 </FrameLayout>
