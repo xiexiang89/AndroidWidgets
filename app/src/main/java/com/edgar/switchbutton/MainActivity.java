@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final SwitchButton switchButton = findViewById(R.id.switch_btn);
+        switchButton.setChecked(false);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -22,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
         switchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switchButton.toggle();
+                boolean isChecked = switchButton.isChecked();
+                switchButton.setChecked(!isChecked);
             }
         });
     }

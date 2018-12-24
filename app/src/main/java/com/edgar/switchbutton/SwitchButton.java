@@ -14,6 +14,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.CompoundButton;
@@ -59,6 +60,7 @@ public class SwitchButton extends CompoundButton {
         mTouchSlop = config.getScaledTouchSlop();
         mThumbDrawable.setCallback(this);
         mTrackDrawable.setCallback(this);
+        setChecked(isChecked());
     }
 
     @Override
@@ -129,7 +131,6 @@ public class SwitchButton extends CompoundButton {
                     mTouchMode = TOUCH_MODE_DOWN;
                     mLastTouchX = x;
                     mLastTouchY = y;
-                    return true;
                 }
                 break;
             }
@@ -160,6 +161,7 @@ public class SwitchButton extends CompoundButton {
                     final Rect bounds = mThumbDrawable.getBounds();
                     int centerX = bounds.centerX();
                     setChecked(centerX >= getMeasuredWidth()/2);
+                    Log.d(TAG,"TOUCH_MODE_DRAGGING");
                     super.onTouchEvent(event);
                     return true;
                 }
@@ -202,6 +204,7 @@ public class SwitchButton extends CompoundButton {
 
     private void setThumbPosition(int position) {
         mThumbPosition = position;
+        Log.d(TAG,"thumb position:"+position);
         final Rect bounds = mThumbDrawable.getBounds();
         mThumbDrawable.setBounds(position,bounds.top,position+getThumbWidth(),bounds.bottom);
     }
