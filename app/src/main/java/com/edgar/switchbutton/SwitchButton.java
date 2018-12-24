@@ -1,21 +1,18 @@
 package com.edgar.switchbutton;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.ViewConfiguration;
 import android.widget.CompoundButton;
 
@@ -60,7 +57,6 @@ public class SwitchButton extends CompoundButton {
         mTouchSlop = config.getScaledTouchSlop();
         mThumbDrawable.setCallback(this);
         mTrackDrawable.setCallback(this);
-        setChecked(isChecked());
     }
 
     @Override
@@ -127,7 +123,7 @@ public class SwitchButton extends CompoundButton {
             case MotionEvent.ACTION_DOWN: {
                 final float x = event.getX();
                 final float y = event.getY();
-                if (hitThumb(x, y)) {
+                if (isEnabled() && hitThumb(x, y)) {
                     mTouchMode = TOUCH_MODE_DOWN;
                     mLastTouchX = x;
                     mLastTouchY = y;
@@ -136,6 +132,10 @@ public class SwitchButton extends CompoundButton {
             }
             case MotionEvent.ACTION_MOVE:
                 switch (mTouchMode) {
+                    case TOUCH_MODE_IDLE:{
+                        break;
+                    }
+
                     case TOUCH_MODE_DOWN: {
                         final float x = event.getX();
                         final float y = event.getY();
@@ -150,7 +150,7 @@ public class SwitchButton extends CompoundButton {
                         break;
                     }
                     case TOUCH_MODE_DRAGGING: {
-                        startDragging(event.getX());
+                        startDrag(event.getX());
                         return true;
                     }
                 }
@@ -158,10 +158,7 @@ public class SwitchButton extends CompoundButton {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL: {
                 if (mTouchMode == TOUCH_MODE_DRAGGING) {
-                    final Rect bounds = mThumbDrawable.getBounds();
-                    int centerX = bounds.centerX();
-                    setChecked(centerX >= getMeasuredWidth()/2);
-                    Log.d(TAG,"TOUCH_MODE_DRAGGING");
+                    stopDrag(event);
                     super.onTouchEvent(event);
                     return true;
                 }
@@ -172,7 +169,7 @@ public class SwitchButton extends CompoundButton {
         return super.onTouchEvent(event);
     }
 
-    private void startDragging(float x) {
+    private void startDrag(float x) {
         final float thumbScrollOffset = x - mLastTouchX;
         int newPosition = (int) (thumbScrollOffset+mThumbDrawable.getBounds().left);
         if (newPosition < mThumbPadding) {
@@ -184,6 +181,34 @@ public class SwitchButton extends CompoundButton {
         }
         setThumbPosition(newPosition);
         mLastTouchX = x;
+    }
+
+    private void stopDrag(MotionEvent ev) {
+        mTouchMode = TOUCH_MODE_IDLE;
+
+        final boolean commitChange = ev.getAction() == MotionEvent.ACTION_UP && isEnabled();
+        final boolean oldState = isChecked();
+        final boolean newState;
+        if (commitChange) {
+            final Rect bounds = mThumbDrawable.getBounds();
+            int centerX = bounds.centerX();
+            newState = centerX >= getMeasuredWidth()/2;
+        } else {
+            newState = oldState;
+        }
+
+        if (newState != oldState) {
+            playSoundEffect(SoundEffectConstants.CLICK);
+        }
+        setChecked(newState);
+        cancelSuperTouch(ev);
+    }
+
+    private void cancelSuperTouch(MotionEvent ev) {
+        MotionEvent cancel = MotionEvent.obtain(ev);
+        cancel.setAction(MotionEvent.ACTION_CANCEL);
+        super.onTouchEvent(cancel);
+        cancel.recycle();
     }
 
     private void animationChecked(boolean checked) {
@@ -204,7 +229,6 @@ public class SwitchButton extends CompoundButton {
 
     private void setThumbPosition(int position) {
         mThumbPosition = position;
-        Log.d(TAG,"thumb position:"+position);
         final Rect bounds = mThumbDrawable.getBounds();
         mThumbDrawable.setBounds(position,bounds.top,position+getThumbWidth(),bounds.bottom);
     }
