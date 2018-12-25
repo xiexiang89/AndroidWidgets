@@ -43,6 +43,7 @@ public class SwitchButton extends CompoundButton {
     private int mTouchMode = TOUCH_MODE_IDLE;
     private ValueAnimator mThumbAnimation;
     private int mThumbPosition;
+    private int mTrackAlpha;
 
     public SwitchButton(Context context) {
         this(context, null);
@@ -72,7 +73,7 @@ public class SwitchButton extends CompoundButton {
         setDrawableCallback(mThumbDrawable);
         setDrawableCallback(mTrackDrawable);
         setDrawableCallback(mTrackCheckDrawable);
-        mTrackCheckDrawable.setAlpha(0);
+        mTrackCheckDrawable.setAlpha(mTrackAlpha);
     }
 
     private GradientDrawable createTrackDrawable(@ColorInt int color) {
@@ -130,10 +131,6 @@ public class SwitchButton extends CompoundButton {
         return mThumbPadding * 2;
     }
 
-    private int getAvailableWidth() {
-        return getMeasuredWidth() - mThumbPadding * 2 - getThumbWidth() / 2;
-    }
-
     private int getSwitchEndLeft() {
         return getMeasuredWidth() - mThumbPadding - getThumbWidth();
     }
@@ -147,8 +144,13 @@ public class SwitchButton extends CompoundButton {
     public void setChecked(boolean checked) {
         super.setChecked(checked);
         checked = isChecked();
+        mTrackAlpha = checked ? 255 : 0;
         if (ViewCompat.isAttachedToWindow(this) && ViewCompat.isLaidOut(this)) {
             animationChecked(checked);
+        } else {
+            if (mTrackCheckDrawable != null) {
+                mTrackCheckDrawable.setAlpha(mTrackAlpha);
+            }
         }
     }
 
@@ -270,7 +272,8 @@ public class SwitchButton extends CompoundButton {
         if (changeAlpha) {
             int width = getMeasuredWidth() - getHorizontalTotalPadding() - getThumbWidth();
             float alpha = Math.max(0f, Math.min((float) bounds.left / width, 1f));
-            mTrackCheckDrawable.setAlpha((int) (255 * alpha));
+            mTrackAlpha = (int) (255 * alpha);
+            mTrackCheckDrawable.setAlpha(mTrackAlpha);
         }
     }
 
