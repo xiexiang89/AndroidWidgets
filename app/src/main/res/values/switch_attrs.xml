@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="SwitchTheme" format="reference"/>
     <declare-styleable name="SwitchButton">
         <attr name="android:thumb"/>
+        <!-- switch track width -->
         <attr name="trackWidth" format="dimension|reference"/>
+        <!-- switch track height -->
         <attr name="trackHeight" format="dimension|reference"/>
+        <!-- switch track uncheck color -->
         <attr name="track_uncheck_color" format="color|reference"/>
+        <!-- switch track check color -->
         <attr name="track_check_color" format="color|reference"/>
         <attr name="track_radius" format="dimension|reference"/>
         <attr name="thumbPadding" format="dimension|reference"/>

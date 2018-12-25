@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -46,21 +45,21 @@ public class SwitchButton extends CompoundButton {
     private int mThumbPosition;
 
     public SwitchButton(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public SwitchButton(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public SwitchButton(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs,R.attr.SwitchTheme);
         Resources res = getResources();
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SwitchButton, defStyleAttr,0);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SwitchButton, defStyleAttr, 0);
         mThumbDrawable = ta.getDrawable(R.styleable.SwitchButton_android_thumb);
-        mTrackWidth = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackWidth,0);
-        mTrackHeight = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackHeight,0);
-        mUnCheckColor = ta.getColor(R.styleable.SwitchButton_track_uncheck_color,res.getColor(R.color.default_unchecked_color));
+        mTrackWidth = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackWidth, res.getDimensionPixelOffset(R.dimen.default_track_width));
+        mTrackHeight = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackHeight, res.getDimensionPixelOffset(R.dimen.default_track_height));
+        mUnCheckColor = ta.getColor(R.styleable.SwitchButton_track_uncheck_color, res.getColor(R.color.default_unchecked_color));
         mCheckColor = ta.getColor(R.styleable.SwitchButton_track_check_color, res.getColor(R.color.default_checked_color));
         mTrackRadius = ta.getDimensionPixelOffset(R.styleable.SwitchButton_track_radius, res.getDimensionPixelOffset(R.dimen.default_track_radius));
         mThumbPadding = ta.getDimensionPixelOffset(R.styleable.SwitchButton_thumbPadding,
@@ -74,13 +73,12 @@ public class SwitchButton extends CompoundButton {
         setDrawableCallback(mTrackDrawable);
         setDrawableCallback(mTrackCheckDrawable);
         mTrackCheckDrawable.setAlpha(0);
-        setClickable(true);
     }
 
     private GradientDrawable createTrackDrawable(@ColorInt int color) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(color);
-        drawable.setSize(mTrackWidth,mTrackHeight);
+        drawable.setSize(mTrackWidth, mTrackHeight);
         drawable.setCornerRadius(mTrackRadius);
         return drawable;
     }
@@ -98,12 +96,12 @@ public class SwitchButton extends CompoundButton {
         final int trackHeight = mTrackHeight;
         final int thumbWidth = getThumbWidth();
         final int thumbHeight = getThumbHeight();
-        int height = Math.max(thumbHeight,trackHeight);
+        int height = Math.max(thumbHeight, trackHeight);
         setMeasuredDimension(trackWidth, height);
-        int thumbTop = (trackHeight - thumbHeight)/2;
+        int thumbTop = (trackHeight - thumbHeight) / 2;
         mThumbPosition = isChecked() ? getSwitchEndLeft() : mThumbPadding;
-        mThumbDrawable.setBounds(mThumbPosition,thumbTop,mThumbPosition + thumbWidth, thumbTop + thumbHeight);
-        mTrackDrawable.setBounds(0,0,trackWidth,trackHeight);
+        mThumbDrawable.setBounds(mThumbPosition, thumbTop, mThumbPosition + thumbWidth, thumbTop + thumbHeight);
+        mTrackDrawable.setBounds(0, 0, trackWidth, trackHeight);
         mTrackCheckDrawable.setBounds(mTrackDrawable.copyBounds());
     }
 
@@ -133,7 +131,7 @@ public class SwitchButton extends CompoundButton {
     }
 
     private int getAvailableWidth() {
-        return getMeasuredWidth() - mThumbPadding*2 - getThumbWidth()/2;
+        return getMeasuredWidth() - mThumbPadding * 2 - getThumbWidth() / 2;
     }
 
     private int getSwitchEndLeft() {
@@ -169,7 +167,7 @@ public class SwitchButton extends CompoundButton {
             }
             case MotionEvent.ACTION_MOVE:
                 switch (mTouchMode) {
-                    case TOUCH_MODE_IDLE:{
+                    case TOUCH_MODE_IDLE: {
                         break;
                     }
 
@@ -208,7 +206,7 @@ public class SwitchButton extends CompoundButton {
 
     private void startDrag(float x, float y) {
         final float thumbScrollOffset = x - mLastTouchX;
-        int newPosition = (int) (thumbScrollOffset+mThumbDrawable.getBounds().left);
+        int newPosition = (int) (thumbScrollOffset + mThumbDrawable.getBounds().left);
         if (newPosition < mThumbPadding) {
             newPosition = mThumbPadding;
         }
@@ -216,7 +214,7 @@ public class SwitchButton extends CompoundButton {
         if (newPosition > switchEndLeft) {
             newPosition = switchEndLeft;
         }
-        setThumbPosition(newPosition,Math.abs(x-mLastTouchX) > Math.abs(y-mLastTouchY));
+        setThumbPosition(newPosition, Math.abs(x - mLastTouchX) > Math.abs(y - mLastTouchY));
         mLastTouchX = x;
         mLastTouchY = y;
     }
@@ -230,7 +228,7 @@ public class SwitchButton extends CompoundButton {
         if (commitChange) {
             final Rect bounds = mThumbDrawable.getBounds();
             int centerX = bounds.centerX();
-            newState = centerX >= getMeasuredWidth()/2;
+            newState = centerX >= getMeasuredWidth() / 2;
         } else {
             newState = oldState;
         }
@@ -257,22 +255,22 @@ public class SwitchButton extends CompoundButton {
             mThumbAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    setThumbPosition((Integer) animation.getAnimatedValue(),true);
+                    setThumbPosition((Integer) animation.getAnimatedValue(), true);
                 }
             });
         }
-        mThumbAnimation.setIntValues(mThumbPosition,targetPosition);
+        mThumbAnimation.setIntValues(mThumbPosition, targetPosition);
         mThumbAnimation.start();
     }
 
     private void setThumbPosition(int position, boolean changeAlpha) {
         mThumbPosition = position;
         final Rect bounds = mThumbDrawable.getBounds();
-        mThumbDrawable.setBounds(position,bounds.top,position+getThumbWidth(),bounds.bottom);
+        mThumbDrawable.setBounds(position, bounds.top, position + getThumbWidth(), bounds.bottom);
         if (changeAlpha) {
             int width = getMeasuredWidth() - getHorizontalTotalPadding() - getThumbWidth();
-            float alpha = Math.max(0f,Math.min((float) bounds.left/width,1f));
-            mTrackCheckDrawable.setAlpha((int) (255*alpha));
+            float alpha = Math.max(0f, Math.min((float) bounds.left / width, 1f));
+            mTrackCheckDrawable.setAlpha((int) (255 * alpha));
         }
     }
 
