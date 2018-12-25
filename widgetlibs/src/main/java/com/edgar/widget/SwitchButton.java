@@ -1,4 +1,4 @@
-package com.edgar.switchbutton;
+package com.edgar.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -58,6 +58,9 @@ public class SwitchButton extends CompoundButton {
         Resources res = getResources();
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SwitchButton, defStyleAttr, 0);
         mThumbDrawable = ta.getDrawable(R.styleable.SwitchButton_android_thumb);
+        if (mThumbDrawable == null) {
+            mThumbDrawable = res.getDrawable(R.drawable.default_thumb);
+        }
         mTrackWidth = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackWidth, res.getDimensionPixelOffset(R.dimen.default_track_width));
         mTrackHeight = ta.getDimensionPixelOffset(R.styleable.SwitchButton_trackHeight, res.getDimensionPixelOffset(R.dimen.default_track_height));
         mUnCheckColor = ta.getColor(R.styleable.SwitchButton_track_uncheck_color, res.getColor(R.color.default_unchecked_color));
@@ -74,6 +77,9 @@ public class SwitchButton extends CompoundButton {
         setDrawableCallback(mTrackDrawable);
         setDrawableCallback(mTrackCheckDrawable);
         mTrackCheckDrawable.setAlpha(mTrackAlpha);
+        mThumbPosition = getThumbPosition();
+        configThumbBounds();
+        configTrackBounds();
     }
 
     private GradientDrawable createTrackDrawable(@ColorInt int color) {
@@ -95,19 +101,11 @@ public class SwitchButton extends CompoundButton {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int trackWidth = mTrackWidth;
         final int trackHeight = mTrackHeight;
-        final int thumbWidth = getThumbWidth();
-        final int thumbHeight = getThumbHeight();
-        int height = Math.max(thumbHeight, trackHeight);
-        setMeasuredDimension(trackWidth, height);
-        int thumbTop = (trackHeight - thumbHeight) / 2;
-        mThumbPosition = isChecked() ? getSwitchEndLeft() : mThumbPadding;
-        mThumbDrawable.setBounds(mThumbPosition, thumbTop, mThumbPosition + thumbWidth, thumbTop + thumbHeight);
-        mTrackDrawable.setBounds(0, 0, trackWidth, trackHeight);
-        mTrackCheckDrawable.setBounds(mTrackDrawable.copyBounds());
+        setMeasuredDimension(trackWidth, trackHeight);
     }
 
     private int getThumbWidth() {
-        return mThumbDrawable.getIntrinsicWidth();
+        return mThumbDrawable == null ? 0 : mThumbDrawable.getIntrinsicWidth();
     }
 
     private int getThumbHeight() {
@@ -132,7 +130,11 @@ public class SwitchButton extends CompoundButton {
     }
 
     private int getSwitchEndLeft() {
-        return getMeasuredWidth() - mThumbPadding - getThumbWidth();
+        return mTrackWidth - mThumbPadding - getThumbWidth();
+    }
+
+    private int getThumbPosition() {
+        return isChecked() ? getSwitchEndLeft() : mThumbPadding;
     }
 
     @Override
@@ -148,10 +150,27 @@ public class SwitchButton extends CompoundButton {
         if (ViewCompat.isAttachedToWindow(this) && ViewCompat.isLaidOut(this)) {
             animationChecked(checked);
         } else {
+            cancelCheckedAnimation();
+            mThumbPosition = getThumbPosition();
+            if (mThumbDrawable != null) {
+                configThumbBounds();
+            }
             if (mTrackCheckDrawable != null) {
                 mTrackCheckDrawable.setAlpha(mTrackAlpha);
             }
         }
+    }
+
+    private void configTrackBounds() {
+        mTrackDrawable.setBounds(0, 0, mTrackWidth, mTrackHeight);
+        mTrackCheckDrawable.setBounds(mTrackDrawable.getBounds());
+    }
+
+    private void configThumbBounds() {
+        final int thumbWidth = getThumbWidth();
+        final int thumbHeight = getThumbHeight();
+        int thumbTop = (mTrackHeight - thumbHeight) / 2;
+        mThumbDrawable.setBounds(mThumbPosition, thumbTop, mThumbPosition + thumbWidth, thumbTop + thumbHeight);
     }
 
     @Override
@@ -247,6 +266,12 @@ public class SwitchButton extends CompoundButton {
         cancel.setAction(MotionEvent.ACTION_CANCEL);
         super.onTouchEvent(cancel);
         cancel.recycle();
+    }
+
+    private void cancelCheckedAnimation() {
+        if (mThumbAnimation != null) {
+            mThumbAnimation.cancel();
+        }
     }
 
     private void animationChecked(final boolean checked) {

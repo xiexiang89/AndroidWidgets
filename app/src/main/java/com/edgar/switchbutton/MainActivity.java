@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.edgar.widget.SwitchButton;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -12,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final SwitchButton switchButton = findViewById(R.id.switch_btn);
-        switchButton.setChecked(false);
+        switchButton.setChecked(true);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

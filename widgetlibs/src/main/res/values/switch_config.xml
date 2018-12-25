@@ -6,4 +6,5 @@
     <dimen name="default_track_radius">30dp</dimen>
     <dimen name="default_track_width">55dp</dimen>
     <dimen name="default_track_height">28dp</dimen>
+    <dimen name="default_thumb_size">23dp</dimen>
 </resources>
