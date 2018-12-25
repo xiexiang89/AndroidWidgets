@@ -27,3 +27,14 @@ app:thumbPadding | 设置Switch滑块的横向内边距 | dimension
         app:track_radius="@dimen/default_track_radius"
         android:layout_gravity="center"/>
 ```
+### Java
+```
+        final SwitchButton switchButton = findViewById(R.id.switch_btn);
+        switchButton.setChecked(true);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(getApplicationContext(),isChecked?"选中":"未选中",Toast.LENGTH_SHORT).show();
+            }
+        });
+```
