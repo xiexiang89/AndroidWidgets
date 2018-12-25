@@ -1,9 +1,7 @@
 # Switch
-Android Switch
+## Android Switch widget.
 
-### Android Switch widget.
-
-#### Switch attrs
+### Switch attrs
 属性名 | 作用 | 类型
 --- | --- | ---
 android:thumb | 设置Switch滑块图标 | drawable
