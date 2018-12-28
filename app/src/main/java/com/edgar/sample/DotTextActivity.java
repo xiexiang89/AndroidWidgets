@@ -1,4 +1,4 @@
-package com.edgar.widget.sample;
+package com.edgar.sample;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

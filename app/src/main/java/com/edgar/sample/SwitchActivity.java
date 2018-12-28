@@ -1,4 +1,4 @@
-package com.edgar.widget.sample;
+package com.edgar.sample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

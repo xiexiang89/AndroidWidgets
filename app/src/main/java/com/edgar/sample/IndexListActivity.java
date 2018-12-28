@@ -1,4 +1,4 @@
-package com.edgar.widget.sample;
+package com.edgar.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
