@@ -1,4 +1,4 @@
-package com.edgar.switchbutton;
+package com.edgar.widget.sample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,12 +7,12 @@ import android.widget.Toast;
 
 import com.edgar.widget.SwitchButton;
 
-public class MainActivity extends AppCompatActivity {
+public class SwitchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.switch_activity);
         final SwitchButton switchButton = findViewById(R.id.switch_btn);
         switchButton.setChecked(true);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

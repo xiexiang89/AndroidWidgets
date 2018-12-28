@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">SwitchButton</string>
+    <string name="app_name">WidgetSample</string>
+    <string name="switch_sample">SwitchSample</string>
+    <string name="dottext_sample">DotTextViewSample</string>
 </resources>
