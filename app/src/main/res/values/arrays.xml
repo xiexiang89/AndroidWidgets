@@ -3,6 +3,6 @@
     <string-array name="sample_index">
         <item>@string/switch_sample</item>
         <item>@string/dottext_sample</item>
-        <item>@string/porter_duff_sample</item>
+        <item>@string/circle_image_sample</item>
     </string-array>
 </resources>

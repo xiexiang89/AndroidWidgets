@@ -2,5 +2,5 @@
     <string name="app_name">WidgetSample</string>
     <string name="switch_sample">SwitchSample</string>
     <string name="dottext_sample">DotTextViewSample</string>
-    <string name="porter_duff_sample">PorterDuff</string>
+    <string name="circle_image_sample">CircleImage</string>
 </resources>
