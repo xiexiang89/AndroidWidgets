@@ -58,7 +58,7 @@ public class CircleImageView extends ImageView {
         mBitmapRectF = new RectF();
         TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.CircleImageView,defStyleAttr,0);
         mBorderColor = ta.getColor(R.styleable.CircleImageView_borderColor,res.getColor(R.color.default_circle_border_color));
-        mBorderSize = ta.getColor(R.styleable.CircleImageView_borderSize,res.getDimensionPixelOffset(R.dimen.default_circle_border_size));
+        mBorderSize = ta.getDimensionPixelSize(R.styleable.CircleImageView_borderSize,0);
         mBorderOverly = ta.getBoolean(R.styleable.CircleImageView_borderOverly,false);
         ta.recycle();
         mBorderPaint.setColor(mBorderColor);
@@ -132,7 +132,7 @@ public class CircleImageView extends ImageView {
         int availableHeight = getMeasuredHeight() - pTop - getPaddingBottom();
         mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
 
-        //update border bounds
+        //set bitmap and border bounds
         mBorderRectF.set(pLeft,pTop,pLeft + availableWidth, pTop + availableHeight);
         mBorderRadius = Math.min((mBorderRectF.width()-mBorderSize)/2f,(mBorderRectF.height()-mBorderSize)/2f);
         mBitmapRectF.set(mBorderRectF);
