@@ -1,4 +1,4 @@
-# Android Switch widget
+# Android widgets
 
 ## Switch attrs
 属性名 | 作用 | 类型
