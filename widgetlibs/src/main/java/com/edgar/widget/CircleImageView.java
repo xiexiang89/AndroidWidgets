@@ -91,10 +91,11 @@ public class CircleImageView extends ImageView {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    protected boolean setFrame(int l, int t, int r, int b) {
+        boolean change = super.setFrame(l,t,r,b);
         mHaveFrame = true;
         updateCircleImage();
+        return change;
     }
 
     private void initBitmap() {
