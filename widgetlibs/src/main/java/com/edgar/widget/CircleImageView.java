@@ -100,6 +100,9 @@ public class CircleImageView extends ImageView {
 
     private void initBitmap() {
         Drawable drawable = getDrawable();
+        if (drawable == null) {
+            return;
+        }
         if (drawable instanceof BitmapDrawable) {
             mBitmap = ((BitmapDrawable) drawable).getBitmap();
         } else {
