@@ -9,4 +9,7 @@
         <item name="SwitchTheme">@style/SwitchStyle</item>
     </style>
 
+    <style name="AppTheme.Black">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
 </resources>

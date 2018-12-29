@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleImageView">
+        <attr name="supportCircle" format="boolean"/>
+        <attr name="borderColor" format="reference|color"/>
+        <attr name="borderSize" format="reference|dimension"/>
+        <attr name="borderOverly" format="boolean|reference"/>
+    </declare-styleable>
+</resources>

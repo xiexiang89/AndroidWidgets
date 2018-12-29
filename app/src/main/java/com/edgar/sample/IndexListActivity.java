@@ -40,6 +40,9 @@ public class IndexListActivity extends AppCompatActivity {
             case 1:
                 startActivity(new Intent(this, DotTextActivity.class));
                 break;
+            case 2:
+                startActivity(new Intent(this,CircleImageActivity.class));
+                break;
         }
     }
 }

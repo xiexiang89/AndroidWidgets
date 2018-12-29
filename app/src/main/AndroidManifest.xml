@@ -21,7 +21,8 @@
         </activity>
         <activity android:name=".SwitchActivity"
             android:label="@string/switch_sample"/>
-        <activity android:name=".PorterDuffDemoActivity"/>
+        <activity android:name=".CircleImageActivity"
+            android:theme="@style/AppTheme.Black"/>
         <activity android:name=".DotTextActivity"
             android:label="@string/dottext_sample"/>
     </application>
