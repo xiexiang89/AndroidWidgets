@@ -1,4 +1,5 @@
-# Android Switch widget
+# Android widgets
+本库收纳平时出现多的控件，包含自己写的和其他开发者的控件~~
 
 ## Switch attrs
 属性名 | 作用 | 类型
