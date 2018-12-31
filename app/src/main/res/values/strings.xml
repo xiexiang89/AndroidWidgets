@@ -1,6 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">WidgetSample</string>
     <string name="switch_sample">SwitchSample</string>
     <string name="dottext_sample">DotTextViewSample</string>
     <string name="circle_image_sample">CircleImage</string>
+    <string name="tab_page_sample">TabPageSample</string>
 </resources>

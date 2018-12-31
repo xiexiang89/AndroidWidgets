@@ -4,5 +4,6 @@
         <item>@string/switch_sample</item>
         <item>@string/dottext_sample</item>
         <item>@string/circle_image_sample</item>
+        <item>@string/tab_page_sample</item>
     </string-array>
 </resources>

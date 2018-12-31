@@ -43,6 +43,9 @@ public class IndexListActivity extends AppCompatActivity {
             case 2:
                 startActivity(new Intent(this,CircleImageActivity.class));
                 break;
+            case 3:
+                startActivity(new Intent(this,TabPageSampleActivity.class));
+                break;
         }
     }
 }
