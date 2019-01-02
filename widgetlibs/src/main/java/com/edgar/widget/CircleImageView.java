@@ -98,6 +98,18 @@ public class CircleImageView extends ImageView {
         return change;
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        recycleBitmap();
+        super.onDetachedFromWindow();
+    }
+
+    private void recycleBitmap() {
+        if (mBitmap != null && mBitmap.isMutable() &&!mBitmap.isRecycled()) {
+            mBitmap.recycle();
+        }
+    }
+
     private void initBitmap() {
         Drawable drawable = getDrawable();
         if (drawable == null) {
