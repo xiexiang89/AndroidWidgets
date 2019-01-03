@@ -22,7 +22,8 @@ public class SmoothImageView extends ImageView {
 
     private final Matrix mSmoothMatrix = new Matrix();
     private Bitmap mBitmap;
-    private int mState;
+    private int mState = STATE_NONE;
+    private Transform mAnimationTransform;
 
     public SmoothImageView(Context context) {
         this(context,null);
@@ -69,6 +70,26 @@ public class SmoothImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (mBitmap == null) {
+            return;
+        }
         super.onDraw(canvas);
+    }
+
+    private class Transform implements Cloneable {
+        float left, top, width, height;
+        int alpha;
+        float scale;
+
+        @Override
+        public Transform clone() {
+            Transform obj = null;
+            try {
+                obj = (Transform) super.clone();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+            return obj;
+        }
     }
 }
