@@ -8,15 +8,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
         <activity android:name=".IndexListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -28,6 +26,10 @@
             android:label="@string/dottext_sample"/>
         <activity android:name=".TabPageSampleActivity"
             android:label="@string/tab_page_sample"/>
+        <activity android:name=".ImageTransitionActivity"
+            android:label="@string/image_transition"/>
+        <activity android:name=".TriangleActivity"
+            android:label="@string/triangle"/>
     </application>
 
 </manifest>

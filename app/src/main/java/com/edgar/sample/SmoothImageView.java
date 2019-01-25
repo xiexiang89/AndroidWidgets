@@ -4,11 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 /**
@@ -16,14 +18,15 @@ import android.widget.ImageView;
  */
 public class SmoothImageView extends ImageView {
 
-    private static final int STATE_NONE = 0;
-    private static final int STATE_IN = 1;
-    private static final int STATE_OUT = 2;
-
     private final Matrix mSmoothMatrix = new Matrix();
     private Bitmap mBitmap;
-    private int mState = STATE_NONE;
+    private Transform mStartTransForm;
+    private Transform mEndTransform;
     private Transform mAnimationTransform;
+    private boolean mAnimatorPaying;
+    private int mBitmapWidth;
+    private int mBitmapHeight;
+    private Rect mThumbRect;
 
     public SmoothImageView(Context context) {
         this(context,null);
@@ -68,12 +71,58 @@ public class SmoothImageView extends ImageView {
         }
     }
 
+    public void showImage(Bitmap bitmap) {
+        mBitmap = bitmap;
+        setImageBitmap(bitmap);
+        ViewTreeObserver viewTreeObserver = getViewTreeObserver();
+        viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (getWidth() > 0 && getHeight() > 0) {
+                    initTransform();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void initTransform() {
+        mStartTransForm = new Transform();
+        mStartTransForm.alpha = 0;
+        if (mThumbRect == null) {
+            mThumbRect = new Rect();
+        }
+        mStartTransForm.left = mThumbRect.left;
+        mStartTransForm.top = mThumbRect.top;
+        mStartTransForm.width = mThumbRect.width();
+        mStartTransForm.height = mThumbRect.height();
+        //开始时以CenterCrop方式显示，缩放图片使图片的一边等于起始区域的一边，另一边大于起始区域
+        float startScaleX = (float) mThumbRect.width() / mBitmapWidth;
+        float startScaleY = (float) mThumbRect.height() / mBitmapHeight;
+        mStartTransForm.scale = startScaleX > startScaleY ? startScaleX : startScaleY;
+
+        //结束时以fitCenter方式显示，缩放图片使图片的一边等于View的一边，另一边大于View
+        float endScaleX = (float) getWidth() / mBitmapWidth;
+        float endScaleY = (float) getHeight() / mBitmapHeight;
+        mEndTransform = new Transform();
+        mEndTransform.scale = endScaleX < endScaleY ? endScaleX : endScaleY;
+        mEndTransform.alpha = 255;
+        int endBitmapWidth = (int) (mEndTransform.scale * mBitmapWidth);
+        int endBitmapHeight = (int) (mEndTransform.scale * mBitmapHeight);
+        mEndTransform.left = (getWidth() - endBitmapWidth) / 2.f;
+        mEndTransform.top = (getHeight() - endBitmapHeight) / 2.f;
+        mEndTransform.width = endBitmapWidth;
+        mEndTransform.height = endBitmapHeight;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         if (mBitmap == null) {
             return;
         }
-        super.onDraw(canvas);
+        if (!mAnimatorPaying) {
+            super.onDraw(canvas);
+        }
     }
 
     private class Transform implements Cloneable {

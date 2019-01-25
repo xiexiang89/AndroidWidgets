@@ -1,5 +1,6 @@
 package com.edgar.sample;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,17 +36,27 @@ public class IndexListActivity extends AppCompatActivity {
     private void handlerItemClick(int position) {
         switch (position) {
             case 0:
-                startActivity(new Intent(this,SwitchActivity.class));
+                startActivity(SwitchActivity.class);
                 break;
             case 1:
-                startActivity(new Intent(this, DotTextActivity.class));
+                startActivity(DotTextActivity.class);
                 break;
             case 2:
-                startActivity(new Intent(this,CircleImageActivity.class));
+                startActivity(CircleImageActivity.class);
                 break;
             case 3:
-                startActivity(new Intent(this,TabPageSampleActivity.class));
+                startActivity(TabPageSampleActivity.class);
+                break;
+            case 4:
+                startActivity(ImageTransitionActivity.class);
+                break;
+            case 5:
+                startActivity(TriangleActivity.class);
                 break;
         }
+    }
+
+    private void startActivity(Class<? extends Activity> clazz) {
+        startActivity(new Intent(this,clazz));
     }
 }
