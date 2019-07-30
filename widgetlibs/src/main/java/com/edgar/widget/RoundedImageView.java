@@ -47,6 +47,7 @@ public class RoundedImageView extends AppCompatImageView {
     private float[] mRoundRadiusArray;
     private boolean mIsCircle;  //圆形
     private boolean mSupportRounded;
+    private boolean mBorderOver;
 
     public RoundedImageView(Context context) {
         this(context, null);
@@ -69,6 +70,7 @@ public class RoundedImageView extends AppCompatImageView {
         TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.RoundedImageView,defStyleAttr,0);
         int borderColor = ta.getColor(R.styleable.RoundedImageView_borderColor,res.getColor(R.color.default_circle_border_color));
         mBorderSize = ta.getDimensionPixelSize(R.styleable.RoundedImageView_borderSize,0);
+        mBorderOver = ta.getBoolean(R.styleable.RoundedImageView_borderOver,true);
         mIsCircle = ta.getBoolean(R.styleable.RoundedImageView_isCircle,false);
         mSupportRounded = ta.getBoolean(R.styleable.RoundedImageView_supportRounded,true);
         mBitmapRadius = ta.getDimension(R.styleable.RoundedImageView_roundRadius,0);
@@ -201,8 +203,12 @@ public class RoundedImageView extends AppCompatImageView {
         //set bitmap and border bounds
         mBorderRectF.set(pLeft,pTop,pLeft + availableWidth, pTop + availableHeight);
         mBitmapRectF.set(mBorderRectF);
+        float offset = mBorderSize/2f;
+        if (!mBorderOver && mBorderSize > 0) {
+            mBitmapRectF.inset(offset,offset);
+        }
         if (mIsCircle) {
-            mCircleBorderRadius = Math.min((mBorderRectF.width()-mBorderSize)/2f,(mBorderRectF.height()-mBorderSize)/2f);
+            mCircleBorderRadius = Math.min((mBorderRectF.width()-offset)/2f,(mBorderRectF.height()-offset)/2f);
             mBitmapRadius = Math.min(mBitmapRectF.width()/2f,mBitmapRectF.height()/2f);
         }
         //update image matrix

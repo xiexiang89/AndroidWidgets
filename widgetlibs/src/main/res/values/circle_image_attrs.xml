@@ -4,6 +4,7 @@
         <attr name="supportRounded" format="boolean|reference"/>
         <attr name="borderColor" format="reference|color"/>
         <attr name="borderSize" format="reference|dimension"/>
+        <attr name="borderOver" format="reference|boolean"/>
         <attr name="isCircle" format="boolean|reference"/>
         <attr name="roundRadius" format="dimension|reference"/>
         <attr name="roundTopLeftRadius" format="dimension|reference"/>

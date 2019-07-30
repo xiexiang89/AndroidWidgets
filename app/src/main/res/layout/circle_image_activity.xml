@@ -19,6 +19,7 @@
             android:padding="5dp"
             app:borderSize="@dimen/default_circle_border_size"
             app:roundRadius="10dp"
+            app:borderOver="false"
             app:isCircle="true"/>
         <TextView
             android:layout_width="wrap_content"
@@ -35,10 +36,11 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
-            android:src="@drawable/yehongyu"
+            android:src="@drawable/qishijie"
             app:borderSize="@dimen/default_circle_border_size"
             android:padding="5dp"
             app:roundRadius="10dp"
+            app:borderOver="false"
             app:isCircle="false"/>
         <TextView
             android:layout_width="wrap_content"
