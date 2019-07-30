@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 The Android Open Source Project
  *
@@ -229,7 +230,6 @@ public class TabLayout extends HorizontalScrollView {
    */
   public static final int TAB_LABEL_VISIBILITY_LABELED = 1;
 
-  /** @hide */
   @IntDef(value = {TAB_LABEL_VISIBILITY_UNLABELED, TAB_LABEL_VISIBILITY_LABELED})
   @Retention(RetentionPolicy.SOURCE)
   public @interface LabelVisibility {}

@@ -10,6 +10,8 @@
 .idea/gradle.xml
 .idea/misc.xml
 .idea/runConfigurations.xml
+.idea/caches/gradle_models.ser
+ .idea/gradle.xml
 .DS_Store
 /build
 /captures

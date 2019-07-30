@@ -25,5 +25,4 @@ public class AnimationUtils {
     public static int lerp(int startValue, int endValue, float fraction) {
         return startValue + Math.round(fraction * (endValue - startValue));
     }
-
 }

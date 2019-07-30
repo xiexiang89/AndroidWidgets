@@ -8,48 +8,55 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by Edgar on 2018/12/29.
  */
-public class CircleImageView extends AppCompatImageView {
+public class RoundedImageView extends AppCompatImageView {
 
     private static final ScaleType CENTER_CROP = ScaleType.CENTER_CROP;
     private static final int COLOR_DRAWABLE_SIZE = 2;
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
+    private static final int TOP_LEFT = 0;
+    private static final int TOP_RIGHT = 2;
+    private static final int BOTTOM_LEFT = 4;
+    private static final int BOTTOM_RIGHT = 6;
 
     private boolean mHaveFrame = false;
     private Bitmap mBitmap;
     private BitmapShader mBitmapShader;
     private Paint mBitmapPaint;
     private Matrix mBitmapMatrix;
+    private Path mShaderPath;
     private int mBorderSize;
-    private int mBorderColor;
     private final RectF mBitmapRectF;
     private final RectF mBorderRectF;
     private final Paint mBorderPaint;
-    private float mBorderRadius;
+    private float mCircleBorderRadius;
     private float mBitmapRadius;
-    private boolean mBorderOverly;
+    private float[] mRoundRadiusArray;
+    private boolean mIsCircle;  //圆形
+    private boolean mSupportRounded;
 
-    public CircleImageView(Context context) {
+    public RoundedImageView(Context context) {
         this(context, null);
     }
 
-    public CircleImageView(Context context, @Nullable AttributeSet attrs) {
+    public RoundedImageView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CircleImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RoundedImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         super.setScaleType(CENTER_CROP);
         final Resources res = getResources();
@@ -57,20 +64,61 @@ public class CircleImageView extends AppCompatImageView {
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderRectF = new RectF();
         mBitmapRectF = new RectF();
-        TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.CircleImageView,defStyleAttr,0);
-        mBorderColor = ta.getColor(R.styleable.CircleImageView_borderColor,res.getColor(R.color.default_circle_border_color));
-        mBorderSize = ta.getDimensionPixelSize(R.styleable.CircleImageView_borderSize,0);
-        mBorderOverly = ta.getBoolean(R.styleable.CircleImageView_borderOverly,false);
+        mRoundRadiusArray = new float[8];
+        mShaderPath = new Path();
+        TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.RoundedImageView,defStyleAttr,0);
+        int borderColor = ta.getColor(R.styleable.RoundedImageView_borderColor,res.getColor(R.color.default_circle_border_color));
+        mBorderSize = ta.getDimensionPixelSize(R.styleable.RoundedImageView_borderSize,0);
+        mIsCircle = ta.getBoolean(R.styleable.RoundedImageView_isCircle,false);
+        mSupportRounded = ta.getBoolean(R.styleable.RoundedImageView_supportRounded,true);
+        mBitmapRadius = ta.getDimension(R.styleable.RoundedImageView_roundRadius,0);
+        float topLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopLeftRadius,mBitmapRadius);
+        float topRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopRightRadius,mBitmapRadius);
+        float bottomLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundBottomLeftRadius,mBitmapRadius);
+        float bottomRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundBottomRightRadius,mBitmapRadius);
+        setRadius(topLeftRadius,topRightRadius,bottomLeftRadius,bottomRightRadius);
         ta.recycle();
-        mBorderPaint.setColor(mBorderColor);
+        setBorderColor(borderColor);
         mBorderPaint.setStrokeWidth(mBorderSize);
         mBorderPaint.setStyle(Paint.Style.STROKE);
         initBitmap();
     }
 
+    public void setRadius(float topLeft, float topRight, float bottomRight, float bottomLeft) {
+        mRoundRadiusArray[TOP_LEFT] = mRoundRadiusArray[TOP_LEFT+1] = topLeft;
+        mRoundRadiusArray[TOP_RIGHT] = mRoundRadiusArray[TOP_RIGHT+1] = topRight;
+        mRoundRadiusArray[BOTTOM_RIGHT] = mRoundRadiusArray[BOTTOM_RIGHT+1] = bottomRight;
+        mRoundRadiusArray[BOTTOM_LEFT] = mRoundRadiusArray[BOTTOM_LEFT+1] = bottomLeft;
+        updateCircleImage();
+    }
+
+    public void setBorderColor(@ColorInt int borderColor) {
+        if (mBorderPaint.getColor() != borderColor) {
+            mBorderPaint.setColor(borderColor);
+            invalidate();
+        }
+    }
+
+    public void setBorderSize(int borderSize) {
+        if (mBorderSize != borderSize) {
+            mBorderSize = borderSize;
+            updateCircleImage();
+            invalidate();
+        }
+    }
+
+    public void setCircle(boolean circle) {
+        mIsCircle = circle;
+        updateCircleImage();
+    }
+
     @Override
     public ScaleType getScaleType() {
-        return CENTER_CROP;
+        if (mSupportRounded) {
+            return CENTER_CROP;
+        } else {
+            return super.getScaleType();
+        }
     }
 
     @Override
@@ -130,6 +178,7 @@ public class CircleImageView extends AppCompatImageView {
                 drawable.setBounds(0,0,canvas.getWidth(),canvas.getHeight());
                 drawable.draw(canvas);
                 mBitmap = bitmap;
+                mBitmapShader = null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
@@ -146,16 +195,16 @@ public class CircleImageView extends AppCompatImageView {
         int pTop = getPaddingTop();
         int availableWidth = getMeasuredWidth() - pLeft - getPaddingRight();
         int availableHeight = getMeasuredHeight() - pTop - getPaddingBottom();
-        mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-
+        if (mBitmapShader == null) {
+            mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        }
         //set bitmap and border bounds
         mBorderRectF.set(pLeft,pTop,pLeft + availableWidth, pTop + availableHeight);
-        mBorderRadius = Math.min((mBorderRectF.width()-mBorderSize)/2f,(mBorderRectF.height()-mBorderSize)/2f);
         mBitmapRectF.set(mBorderRectF);
-        if (!mBorderOverly && mBorderSize > 0) {
-            mBitmapRectF.inset(mBorderSize,mBorderSize);
+        if (mIsCircle) {
+            mCircleBorderRadius = Math.min((mBorderRectF.width()-mBorderSize)/2f,(mBorderRectF.height()-mBorderSize)/2f);
+            mBitmapRadius = Math.min(mBitmapRectF.width()/2f,mBitmapRectF.height()/2f);
         }
-        mBitmapRadius = Math.min(mBitmapRectF.width()/2f,mBitmapRectF.height()/2f);
         //update image matrix
         updateImageMatrix(mBitmapRectF.width(),mBitmapRectF.height());
     }
@@ -188,12 +237,31 @@ public class CircleImageView extends AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (!mSupportRounded) {
+            super.onDraw(canvas);
+            return;
+        }
         if (mBitmap == null) {
             return;
         }
-        canvas.drawCircle(mBitmapRectF.centerX(), mBitmapRectF.centerY(),mBitmapRadius, mBitmapPaint);
+        if (mIsCircle) {
+            canvas.drawCircle(mBitmapRectF.centerX(), mBitmapRectF.centerY(),mBitmapRadius, mBitmapPaint);
+            if (mBorderSize > 0) {
+                canvas.drawCircle(mBorderRectF.centerX(),mBorderRectF.centerY(), mCircleBorderRadius, mBorderPaint);
+            }
+        } else {
+            drawRoundImage(canvas);
+        }
+    }
+
+    private void drawRoundImage(Canvas canvas) {
+        mShaderPath.reset();
+        mShaderPath.addRoundRect(mBitmapRectF, mRoundRadiusArray, Path.Direction.CW);
+        canvas.drawPath(mShaderPath,mBitmapPaint);
+        mShaderPath.reset();
         if (mBorderSize > 0) {
-            canvas.drawCircle(mBorderRectF.centerX(),mBorderRectF.centerY(),mBorderRadius, mBorderPaint);
+            mShaderPath.addRoundRect(mBorderRectF,mRoundRadiusArray, Path.Direction.CW);
+            canvas.drawPath(mShaderPath,mBorderPaint);
         }
     }
 }

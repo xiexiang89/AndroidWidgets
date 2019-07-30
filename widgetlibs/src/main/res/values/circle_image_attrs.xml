@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="CircleImageView">
-        <attr name="supportCircle" format="boolean"/>
+    <declare-styleable name="RoundedImageView">
+        <attr name="supportRounded" format="boolean|reference"/>
         <attr name="borderColor" format="reference|color"/>
         <attr name="borderSize" format="reference|dimension"/>
-        <attr name="borderOverly" format="boolean|reference"/>
+        <attr name="isCircle" format="boolean|reference"/>
+        <attr name="roundRadius" format="dimension|reference"/>
+        <attr name="roundTopLeftRadius" format="dimension|reference"/>
+        <attr name="roundTopRightRadius" format="dimension|reference"/>
+        <attr name="roundBottomLeftRadius" format="dimension|reference"/>
+        <attr name="roundBottomRightRadius" format="dimension|reference"/>
     </declare-styleable>
 </resources>
