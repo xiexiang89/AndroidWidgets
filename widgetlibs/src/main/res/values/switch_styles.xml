@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SwitchStyle" parent="@android:style/Widget.CompoundButton">
+        <item name="android:clickable">false</item>
+    </style>
+</resources>

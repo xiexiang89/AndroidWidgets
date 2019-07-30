@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TabLayout">
+        <attr name="tabIndicatorHeight"/>
+        <attr name="tabIndicatorColor"/>
+        <attr name="tabPadding"/>
+        <attr name="tabPaddingStart"/>
+        <attr name="tabPaddingEnd"/>
+        <attr name="tabPaddingTop"/>
+        <attr name="tabPaddingBottom"/>
+        <attr name="tabTextAppearance"/>
+        <attr name="TextAppearance"/>
+        <attr name="android:textSize"/>
+        <attr name="android:textColor"/>
+        <attr name="tabTextColor"/>
+        <attr name="tabSelectedTextColor"/>
+        <attr name="tabMinWidth"/>
+        <attr name="tabMaxWidth"/>
+        <attr name="tabBackground"/>
+        <attr name="tabContentStart"/>
+        <attr name="tabMode"/>
+        <attr name="tabGravity"/>
+        <attr name="bottomDividerHeight" format="dimension"/>
+        <attr name="bottomDividerColor" format="color|reference"/>
+        <attr name="bottomDivider" format="reference"/>
+        <attr name="tabIndicatorAnimationDuration" format="integer"/>
+        <attr name="tabIndicator" format="reference"/>
+        <attr name="tabIndicatorGravity">
+            <!-- Align indicator to the bottom of this tab layout. -->
+            <enum name="bottom" value="0"/>
+            <!-- Align indicator along the center of this tab layout. -->
+            <enum name="center" value="1"/>
+            <!-- Align indicator to the top of this tab layout. -->
+            <enum name="top" value="2"/>
+            <!-- Stretch indicator to match the height and width of a tab item in this layout. -->
+            <enum name="stretch" value="3"/>
+        </attr>
+        <attr name="tabIndicatorFullWidth" format="boolean"/>
+        <attr name="tabInlineLabel" format="boolean"/>
+        <attr name="tabIconTint" format="color"/>
+        <attr name="tabIconTintMode">
+            <enum name="src_over" value="3"/>
+            <enum name="src_in" value="5"/>
+            <enum name="src_atop" value="9"/>
+            <enum name="multiply" value="14"/>
+            <enum name="screen" value="15"/>
+            <enum name="add" value="16"/>
+        </attr>
+        <!-- Ripple color for the tabs. This may be a color state list, if the desired ripple color
+         should be stateful.-->
+        <attr name="tabRippleColor" format="color"/>
+        <!-- Whether to use unbounded ripple effect for tabs, or if ripple should instead be bound to
+             tab item bounds. -->
+        <attr name="tabUnboundedRipple" format="boolean"/>
+    </declare-styleable>
+    <declare-styleable name="TabItem">
+        <attr name="android_text"/>
+        <attr name="android_icon"/>
+        <attr name="android_layout"/>
+    </declare-styleable>
+</resources>

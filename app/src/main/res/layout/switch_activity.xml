@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.edgar.widget.sample.com.edgar.sample.SwitchActivity">
+
+    <com.edgar.widget.SwitchButton
+        android:id="@+id/switch_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:trackWidth="@dimen/default_track_width"
+        app:trackHeight="@dimen/default_track_height"
+        android:thumb="@drawable/default_thumb"
+        app:track_uncheck_color="@color/default_unchecked_color"
+        app:track_check_color="@color/default_checked_color"
+        app:track_radius="@dimen/default_track_radius"
+        android:layout_gravity="center"/>
+</FrameLayout>
