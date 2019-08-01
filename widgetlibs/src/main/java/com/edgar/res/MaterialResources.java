@@ -1,15 +1,15 @@
 package com.edgar.res;
 
-import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
-import android.support.annotation.StyleableRes;
-import android.support.v7.content.res.AppCompatResources;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.StyleableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 /** Utility methods to resolve resources for components. */
 @RestrictTo(LIBRARY_GROUP)

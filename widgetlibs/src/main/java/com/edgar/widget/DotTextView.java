@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -16,7 +16,7 @@ import com.edgar.span.BulletSpanCompat;
  * Created by Edgar on 2018/12/25.
  * 基于BulletSpan的封装.
  */
-public class DotTextView extends android.support.v7.widget.AppCompatTextView {
+public class DotTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     private int mDotColor;
     private int mDotSize;
