@@ -63,6 +63,12 @@ public class RoundedImageActivity extends AppCompatActivity implements SeekBar.O
                 mRoundedImageView.setOval(isChecked);
             }
         });
+        mRoundedImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.edgar.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -18,7 +19,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 
 /**
  * Created by Edgar on 2018/12/29.
@@ -52,6 +52,9 @@ public class RoundedImageView extends AppCompatImageView {
     private boolean mIsOval;  //圆形
     private boolean mSupportRounded;
     private boolean mBorderOverlay;
+    private Paint mMaskPaint;
+    private int mCurMaskColor;
+    private ColorStateList mMaskColor;
 
     public RoundedImageView(Context context) {
         this(context, null);
@@ -68,6 +71,8 @@ public class RoundedImageView extends AppCompatImageView {
         mDrawablePaint.setDither(true);
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderPaint.setDither(true);
+        mMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMaskPaint.setDither(true);
         mBorderRectF = new RectF();
         mDrawableRectF = new RectF();
         mDrawableRadii = new float[8];
@@ -80,6 +85,7 @@ public class RoundedImageView extends AppCompatImageView {
         mBorderOverlay = ta.getBoolean(R.styleable.RoundedImageView_borderOverlay,true);
         mIsOval = ta.getBoolean(R.styleable.RoundedImageView_isOval,false);
         mSupportRounded = ta.getBoolean(R.styleable.RoundedImageView_supportRounded,true);
+        ColorStateList maskColor = ta.getColorStateList(R.styleable.RoundedImageView_maskColor);
         float roundRadius = ta.getDimension(R.styleable.RoundedImageView_roundRadius,0);
         float topLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopLeftRadius, roundRadius);
         float topRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopRightRadius, roundRadius);
@@ -90,7 +96,35 @@ public class RoundedImageView extends AppCompatImageView {
         setBorderColor(borderColor);
         mBorderPaint.setStrokeWidth(mBorderSize);
         mBorderPaint.setStyle(Paint.Style.STROKE);
+        setMaskColor(maskColor);
         initBitmap();
+    }
+
+    public void setMaskColor(@ColorInt int maskColor) {
+        mMaskColor = ColorStateList.valueOf(maskColor);
+        updateColors();
+    }
+
+    public void setMaskColor(ColorStateList color) {
+        if (color == null) {
+            throw new NullPointerException();
+        }
+        mMaskColor = color;
+        updateColors();
+    }
+
+    private void updateColors() {
+        boolean inval = false;
+        final int[] drawableState = getDrawableState();
+        int color = mMaskColor.getColorForState(drawableState, 0);
+        if (color != mCurMaskColor) {
+            mCurMaskColor = color;
+            mMaskPaint.setColor(mCurMaskColor);
+            inval = true;
+        }
+        if (inval) {
+            invalidate();
+        }
     }
 
     public void setTopLeftRadii(float radii) {
@@ -348,6 +382,14 @@ public class RoundedImageView extends AppCompatImageView {
     }
 
     @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        if (mMaskColor != null && mMaskColor.isStateful()) {
+            updateColors();
+        }
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         if (!mSupportRounded) {
             super.onDraw(canvas);
@@ -358,6 +400,7 @@ public class RoundedImageView extends AppCompatImageView {
         }
         if (mIsOval) {
             canvas.drawOval(mDrawableRectF, mDrawablePaint);
+            drawOvalMask(canvas);
             if (mBorderSize > 0) {
                 canvas.drawOval(mBorderRectF, mBorderPaint);
             }
@@ -368,8 +411,21 @@ public class RoundedImageView extends AppCompatImageView {
 
     private void drawRoundImage(Canvas canvas) {
         canvas.drawPath(mDrawablePath, mDrawablePaint);
+        drawRoundMask(canvas);
         if (hasBorder()) {
             canvas.drawPath(mBorderPath,mBorderPaint);
+        }
+    }
+
+    private void drawOvalMask(Canvas canvas) {
+        if (isPressed()) {
+            canvas.drawOval(mDrawableRectF,mMaskPaint);
+        }
+    }
+
+    private void drawRoundMask(Canvas canvas) {
+        if (isPressed()) {
+            canvas.drawPath(mDrawablePath,mMaskPaint);
         }
     }
 }

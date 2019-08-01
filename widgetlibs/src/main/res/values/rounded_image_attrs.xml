@@ -11,5 +11,6 @@
         <attr name="roundTopRightRadius" format="dimension|reference"/>
         <attr name="roundBottomLeftRadius" format="dimension|reference"/>
         <attr name="roundBottomRightRadius" format="dimension|reference"/>
+        <attr name="maskColor" format="color|reference"/>
     </declare-styleable>
 </resources>

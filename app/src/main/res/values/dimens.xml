@@ -6,6 +6,6 @@
     <dimen name="index_item_height">50dp</dimen>
     <dimen name="triangle_width">50dp</dimen>
     <dimen name="triangle_height">30dp</dimen>
-    <color name="default_border_color">#0aa4fd</color>
+
     <dimen name="default_border_size">10dp</dimen>
 </resources>
