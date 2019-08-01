@@ -1,11 +1,13 @@
 package com.edgar.sample;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatCheckedTextView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -59,12 +61,6 @@ public class RoundedImageActivity extends AppCompatActivity implements SeekBar.O
                 mRoundedImageView.setOval(isChecked);
             }
         });
-        mRoundedImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
     }
 
     @Override
@@ -101,5 +97,20 @@ public class RoundedImageActivity extends AppCompatActivity implements SeekBar.O
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+    public void onStartRoundAnimator(View view) {
+        if (mRoundedImageView.isOval()) return;
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0,mRoundedImageView.getWidth()/2f);
+        valueAnimator.setInterpolator(new LinearInterpolator());
+        valueAnimator.setDuration(1000);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float radii = (float) animation.getAnimatedValue();
+                mRoundedImageView.setCornerRadii(radii,radii,radii,radii);
+            }
+        });
+        valueAnimator.start();
     }
 }

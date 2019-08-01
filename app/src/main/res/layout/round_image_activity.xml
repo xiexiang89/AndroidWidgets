@@ -16,7 +16,8 @@
         app:borderOverlay="false"
         app:isOval="true"
         app:maskColor="@color/mask_colors"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:clickable="true"/>
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -121,5 +122,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="是否圆形"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始圆角动画"
+            android:onClick="onStartRoundAnimator"/>
     </LinearLayout>
 </LinearLayout>
