@@ -42,7 +42,7 @@ public class IndexListActivity extends AppCompatActivity {
                 startActivity(DotTextActivity.class);
                 break;
             case 2:
-                startActivity(CircleImageActivity.class);
+                startActivity(RoundedImageActivity.class);
                 break;
             case 3:
                 startActivity(TabPageSampleActivity.class);

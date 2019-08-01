@@ -27,27 +27,29 @@ public class RoundedImageView extends AppCompatImageView {
     private static final ScaleType CENTER_CROP = ScaleType.CENTER_CROP;
     private static final int COLOR_DRAWABLE_SIZE = 2;
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
+    //顺时针方向
     private static final int TOP_LEFT = 0;
     private static final int TOP_RIGHT = 2;
-    private static final int BOTTOM_LEFT = 4;
-    private static final int BOTTOM_RIGHT = 6;
+    private static final int BOTTOM_RIGHT = 4;
+    private static final int BOTTOM_LEFT = 6;
 
     private boolean mHaveFrame = false;
     private Bitmap mBitmap;
     private BitmapShader mBitmapShader;
-    private Paint mBitmapPaint;
-    private Matrix mBitmapMatrix;
+    private Paint mDrawablePaint;
+    private Matrix mDrawableMatrix;
     private Path mShaderPath;
     private int mBorderSize;
-    private final RectF mBitmapRectF;
+    private final RectF mDrawableRectF;
     private final RectF mBorderRectF;
     private final Paint mBorderPaint;
     private float mCircleBorderRadius;
-    private float mBitmapRadius;
-    private float[] mRoundRadiusArray;
+    private float mCircleDrawableRadius;
+    private float[] mDrawableRadii;
+    private float[] mBorderRadii;
     private boolean mIsCircle;  //圆形
     private boolean mSupportRounded;
-    private boolean mBorderOver;
+    private boolean mBorderOverlay;
 
     public RoundedImageView(Context context) {
         this(context, null);
@@ -61,24 +63,25 @@ public class RoundedImageView extends AppCompatImageView {
         super(context, attrs, defStyleAttr);
         super.setScaleType(CENTER_CROP);
         final Resources res = getResources();
-        mBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDrawablePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderRectF = new RectF();
-        mBitmapRectF = new RectF();
-        mRoundRadiusArray = new float[8];
+        mDrawableRectF = new RectF();
+        mDrawableRadii = new float[8];
+        mBorderRadii = mDrawableRadii.clone();
         mShaderPath = new Path();
         TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.RoundedImageView,defStyleAttr,0);
         int borderColor = ta.getColor(R.styleable.RoundedImageView_borderColor,res.getColor(R.color.default_circle_border_color));
         mBorderSize = ta.getDimensionPixelSize(R.styleable.RoundedImageView_borderSize,0);
-        mBorderOver = ta.getBoolean(R.styleable.RoundedImageView_borderOver,true);
+        mBorderOverlay = ta.getBoolean(R.styleable.RoundedImageView_borderOverlay,true);
         mIsCircle = ta.getBoolean(R.styleable.RoundedImageView_isCircle,false);
         mSupportRounded = ta.getBoolean(R.styleable.RoundedImageView_supportRounded,true);
-        mBitmapRadius = ta.getDimension(R.styleable.RoundedImageView_roundRadius,0);
-        float topLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopLeftRadius,mBitmapRadius);
-        float topRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopRightRadius,mBitmapRadius);
-        float bottomLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundBottomLeftRadius,mBitmapRadius);
-        float bottomRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundBottomRightRadius,mBitmapRadius);
-        setRadius(topLeftRadius,topRightRadius,bottomLeftRadius,bottomRightRadius);
+        mCircleDrawableRadius = ta.getDimension(R.styleable.RoundedImageView_roundRadius,0);
+        float topLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopLeftRadius, mCircleDrawableRadius);
+        float topRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundTopRightRadius, mCircleDrawableRadius);
+        float bottomLeftRadius = ta.getDimension(R.styleable.RoundedImageView_roundBottomLeftRadius, mCircleDrawableRadius);
+        float bottomRightRadius = ta.getDimension(R.styleable.RoundedImageView_roundBottomRightRadius, mCircleDrawableRadius);
+        setCornerRadii(topLeftRadius,topRightRadius,bottomLeftRadius,bottomRightRadius);
         ta.recycle();
         setBorderColor(borderColor);
         mBorderPaint.setStrokeWidth(mBorderSize);
@@ -86,12 +89,41 @@ public class RoundedImageView extends AppCompatImageView {
         initBitmap();
     }
 
-    public void setRadius(float topLeft, float topRight, float bottomRight, float bottomLeft) {
-        mRoundRadiusArray[TOP_LEFT] = mRoundRadiusArray[TOP_LEFT+1] = topLeft;
-        mRoundRadiusArray[TOP_RIGHT] = mRoundRadiusArray[TOP_RIGHT+1] = topRight;
-        mRoundRadiusArray[BOTTOM_RIGHT] = mRoundRadiusArray[BOTTOM_RIGHT+1] = bottomRight;
-        mRoundRadiusArray[BOTTOM_LEFT] = mRoundRadiusArray[BOTTOM_LEFT+1] = bottomLeft;
-        updateCircleImage();
+    public void setTopLeftRadii(float radii) {
+        mBorderRadii[TOP_LEFT] = mBorderRadii[TOP_LEFT+1] = radii;
+        mDrawableRadii[TOP_LEFT] = mDrawableRadii[TOP_LEFT+1] = radii;
+        updateDrawable();
+    }
+
+    public void setTopRightRadii(float radii) {
+        mBorderRadii[TOP_RIGHT] = mBorderRadii[TOP_RIGHT+1] = radii;
+        mDrawableRadii[TOP_RIGHT] = mDrawableRadii[TOP_RIGHT+1] = radii;
+        updateDrawable();
+    }
+
+    public void setBottomLeftRadii(float radii) {
+        mBorderRadii[BOTTOM_LEFT] = mBorderRadii[BOTTOM_LEFT+1] = radii;
+        mDrawableRadii[BOTTOM_LEFT] = mDrawableRadii[BOTTOM_LEFT+1] = radii;
+        updateDrawable();
+    }
+
+    public void setBottomRightRadii(float radii) {
+        mBorderRadii[BOTTOM_RIGHT] = mBorderRadii[BOTTOM_RIGHT+1] = radii;
+        mDrawableRadii[BOTTOM_RIGHT] = mDrawableRadii[BOTTOM_RIGHT+1] = radii;
+        updateDrawable();
+    }
+
+    public void setCornerRadii(float topLeft, float topRight, float bottomRight, float bottomLeft) {
+        updateRadii(mBorderRadii,topLeft,topRight,bottomRight,bottomLeft);
+        updateRadii(mDrawableRadii,topLeft,topRight,bottomRight,bottomLeft);
+        updateDrawable();
+    }
+
+    private void updateRadii(float[] cornerRadii, float topLeft, float topRight, float bottomRight, float bottomLeft) {
+        cornerRadii[TOP_LEFT] = cornerRadii[TOP_LEFT+1] = topLeft;
+        cornerRadii[TOP_RIGHT] = cornerRadii[TOP_RIGHT+1] = topRight;
+        cornerRadii[BOTTOM_RIGHT] = cornerRadii[BOTTOM_RIGHT+1] = bottomRight;
+        cornerRadii[BOTTOM_LEFT] = cornerRadii[BOTTOM_LEFT+1] = bottomLeft;
     }
 
     public void setBorderColor(@ColorInt int borderColor) {
@@ -104,14 +136,23 @@ public class RoundedImageView extends AppCompatImageView {
     public void setBorderSize(int borderSize) {
         if (mBorderSize != borderSize) {
             mBorderSize = borderSize;
-            updateCircleImage();
-            invalidate();
+            mBorderPaint.setStrokeWidth(mBorderSize);
+            updateDrawable();
         }
     }
 
     public void setCircle(boolean circle) {
-        mIsCircle = circle;
-        updateCircleImage();
+        if (mIsCircle != circle) {
+            mIsCircle = circle;
+            updateDrawable();
+        }
+    }
+
+    @Override
+    public void setScaleType(ScaleType scaleType) {
+        if (!mSupportRounded) {
+            super.setScaleType(scaleType);
+        }
     }
 
     @Override
@@ -145,7 +186,7 @@ public class RoundedImageView extends AppCompatImageView {
     protected boolean setFrame(int l, int t, int r, int b) {
         boolean change = super.setFrame(l,t,r,b);
         mHaveFrame = true;
-        updateCircleImage();
+        updateDrawable();
         return change;
     }
 
@@ -164,6 +205,8 @@ public class RoundedImageView extends AppCompatImageView {
     private void initBitmap() {
         Drawable drawable = getDrawable();
         if (drawable == null) {
+            mBitmap = null;
+            invalidate();
             return;
         }
         if (drawable instanceof BitmapDrawable) {
@@ -186,43 +229,59 @@ public class RoundedImageView extends AppCompatImageView {
                 return;
             }
         }
-        updateCircleImage();
+        updateDrawable();
     }
 
-    private void updateCircleImage() {
+    private RectF calculateBounds() {
+        int availableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+        int availableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+
+        int sideLength = Math.min(availableWidth, availableHeight);
+
+        float left = getPaddingLeft() + (availableWidth - sideLength) / 2f;
+        float top = getPaddingTop() + (availableHeight - sideLength) / 2f;
+
+        return new RectF(left, top, left + sideLength, top + sideLength);
+    }
+
+    private void updateDrawable() {
         if (mBitmap == null || !mHaveFrame) {
             return;
         }
-        int pLeft = getPaddingLeft();
-        int pTop = getPaddingTop();
-        int availableWidth = getMeasuredWidth() - pLeft - getPaddingRight();
-        int availableHeight = getMeasuredHeight() - pTop - getPaddingBottom();
         if (mBitmapShader == null) {
             mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         }
         //set bitmap and border bounds
-        mBorderRectF.set(pLeft,pTop,pLeft + availableWidth, pTop + availableHeight);
-        mBitmapRectF.set(mBorderRectF);
-        float offset = mBorderSize/2f;
-        if (!mBorderOver && mBorderSize > 0) {
-            mBitmapRectF.inset(offset,offset);
+        mBorderRectF.set(calculateBounds());
+        mDrawableRectF.set(mBorderRectF);
+        if (!mBorderOverlay && mBorderSize > 0) {
+            if (!mIsCircle) {
+                float offset = mBorderSize/2f;
+                mDrawableRectF.inset(offset,offset);
+                updateRadii(mDrawableRadii,
+                        mBorderRadii[TOP_LEFT]-offset, mBorderRadii[TOP_RIGHT]-offset,
+                        mBorderRadii[BOTTOM_RIGHT]-offset,mBorderRadii[BOTTOM_LEFT]-offset);
+            } else {
+                mDrawableRectF.inset(mBorderSize,mBorderSize);
+            }
         }
         if (mIsCircle) {
-            mCircleBorderRadius = Math.min((mBorderRectF.width()-offset)/2f,(mBorderRectF.height()-offset)/2f);
-            mBitmapRadius = Math.min(mBitmapRectF.width()/2f,mBitmapRectF.height()/2f);
+            mCircleBorderRadius = Math.min((mBorderRectF.width()-mBorderSize)/2f,(mBorderRectF.height()-mBorderSize)/2f);
+            mCircleDrawableRadius = Math.min(mDrawableRectF.width()/2f, mDrawableRectF.height()/2f);
         }
         //update image matrix
-        updateImageMatrix(mBitmapRectF.width(),mBitmapRectF.height());
+        updateDrawableMatrix(mDrawableRectF.width(), mDrawableRectF.height());
+        invalidate();
     }
 
-    private void updateImageMatrix(float fwidth, float fheight) {
+    private void updateDrawableMatrix(float fwidth, float fheight) {
         int bitmapWidth = mBitmap.getWidth();
         int bitmapHeight = mBitmap.getHeight();
         if (bitmapWidth <= 0 || bitmapHeight <= 0) {
             return;
         }
-        if (mBitmapMatrix == null) {
-            mBitmapMatrix = new Matrix();
+        if (mDrawableMatrix == null) {
+            mDrawableMatrix = new Matrix();
         }
         float scale;
         float dx = 0, dy = 0;
@@ -234,11 +293,11 @@ public class RoundedImageView extends AppCompatImageView {
             dy = (fheight - bitmapHeight * scale) * 0.5f;
         }
 
-        mBitmapMatrix.set(null);
-        mBitmapMatrix.setScale(scale, scale);
-        mBitmapMatrix.postTranslate(Math.round(dx), Math.round(dy));
-        mBitmapShader.setLocalMatrix(mBitmapMatrix);
-        mBitmapPaint.setShader(mBitmapShader);
+        mDrawableMatrix.set(null);
+        mDrawableMatrix.setScale(scale, scale);
+        mDrawableMatrix.postTranslate((int) (dx + 0.5f) + mDrawableRectF.left, (int) (dy + 0.5f) + mDrawableRectF.top);
+        mBitmapShader.setLocalMatrix(mDrawableMatrix);
+        mDrawablePaint.setShader(mBitmapShader);
     }
 
     @Override
@@ -251,7 +310,7 @@ public class RoundedImageView extends AppCompatImageView {
             return;
         }
         if (mIsCircle) {
-            canvas.drawCircle(mBitmapRectF.centerX(), mBitmapRectF.centerY(),mBitmapRadius, mBitmapPaint);
+            canvas.drawCircle(mDrawableRectF.centerX(), mDrawableRectF.centerY(), mCircleDrawableRadius, mDrawablePaint);
             if (mBorderSize > 0) {
                 canvas.drawCircle(mBorderRectF.centerX(),mBorderRectF.centerY(), mCircleBorderRadius, mBorderPaint);
             }
@@ -262,11 +321,11 @@ public class RoundedImageView extends AppCompatImageView {
 
     private void drawRoundImage(Canvas canvas) {
         mShaderPath.reset();
-        mShaderPath.addRoundRect(mBitmapRectF, mRoundRadiusArray, Path.Direction.CW);
-        canvas.drawPath(mShaderPath,mBitmapPaint);
+        mShaderPath.addRoundRect(mDrawableRectF, mDrawableRadii, Path.Direction.CW);
+        canvas.drawPath(mShaderPath, mDrawablePaint);
         mShaderPath.reset();
         if (mBorderSize > 0) {
-            mShaderPath.addRoundRect(mBorderRectF,mRoundRadiusArray, Path.Direction.CW);
+            mShaderPath.addRoundRect(mBorderRectF, mBorderRadii, Path.Direction.CW);
             canvas.drawPath(mShaderPath,mBorderPaint);
         }
     }
