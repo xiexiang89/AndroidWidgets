@@ -2,7 +2,7 @@
     <string name="app_name">WidgetSample</string>
     <string name="switch_sample">SwitchSample</string>
     <string name="dottext_sample">DotTextViewSample</string>
-    <string name="circle_image_sample">CircleImage</string>
+    <string name="rounded_image_sample">RoundedImage</string>
     <string name="tab_page_sample">TabPageSample</string>
     <string name="image_transition">ImageTransition</string>
     <string name="triangle">Triangle</string>

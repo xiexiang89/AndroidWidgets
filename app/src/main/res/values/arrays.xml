@@ -3,7 +3,7 @@
     <string-array name="sample_index">
         <item>@string/switch_sample</item>
         <item>@string/dottext_sample</item>
-        <item>@string/circle_image_sample</item>
+        <item>@string/rounded_image_sample</item>
         <item>@string/tab_page_sample</item>
         <item>@string/image_transition</item>
         <item>@string/triangle</item>

@@ -21,7 +21,7 @@
         <activity android:name=".SwitchActivity"
             android:label="@string/switch_sample"/>
         <activity android:name=".RoundedImageActivity"
-            android:label="@string/circle_image_sample"/>
+            android:label="@string/rounded_image_sample"/>
         <activity android:name=".DotTextActivity"
             android:label="@string/dottext_sample"/>
         <activity android:name=".TabPageSampleActivity"
