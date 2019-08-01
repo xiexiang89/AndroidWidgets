@@ -65,7 +65,9 @@ public class RoundedImageView extends AppCompatImageView {
         super(context, attrs, defStyleAttr);
         super.setScaleType(CENTER_CROP);
         mDrawablePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDrawablePaint.setDither(true);
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBorderPaint.setDither(true);
         mBorderRectF = new RectF();
         mDrawableRectF = new RectF();
         mDrawableRadii = new float[8];
