@@ -5,7 +5,7 @@
         <attr name="borderColor" format="reference|color"/>
         <attr name="borderSize" format="reference|dimension"/>
         <attr name="borderOverlay" format="reference|boolean"/>
-        <attr name="isCircle" format="boolean|reference"/>
+        <attr name="isOval" format="boolean|reference"/>
         <attr name="roundRadius" format="dimension|reference"/>
         <attr name="roundTopLeftRadius" format="dimension|reference"/>
         <attr name="roundTopRightRadius" format="dimension|reference"/>

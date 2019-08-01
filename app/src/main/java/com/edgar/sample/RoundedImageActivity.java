@@ -1,9 +1,17 @@
 package com.edgar.sample;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewTreeObserver;
+import android.support.v7.widget.AppCompatCheckedTextView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 
 import com.edgar.widget.RoundedImageView;
@@ -23,7 +31,7 @@ public class RoundedImageActivity extends AppCompatActivity implements SeekBar.O
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.circle_image_activity);
+        setContentView(R.layout.round_image_activity);
         mRoundedImageView = findViewById(R.id.rounded_image);
         mStrokeSeekBar = findViewById(R.id.stroke_seek_bar);
         mTopLeftSeekBar = findViewById(R.id.top_left_seek_bar);
@@ -35,15 +43,30 @@ public class RoundedImageActivity extends AppCompatActivity implements SeekBar.O
         mTopRightSeekBar.setOnSeekBarChangeListener(this);
         mBottomRightSeekBar.setOnSeekBarChangeListener(this);
         mBottomLeftSeekBar.setOnSeekBarChangeListener(this);
-        mTopLeftSeekBar.setMax(100);
-        mTopRightSeekBar.setMax(100);
-        mBottomRightSeekBar.setMax(100);
-        mBottomLeftSeekBar.setMax(100);
+        mTopLeftSeekBar.setProgress(100);
+        mTopRightSeekBar.setProgress(100);
+        mBottomRightSeekBar.setProgress(100);
+        mBottomLeftSeekBar.setProgress(100);
+        CheckBox checkBox = findViewById(R.id.border_overlay);
+        checkBox.setChecked(mRoundedImageView.isBorderOverlay());
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mRoundedImageView.setBorderOverlay(isChecked);
+            }
+        });
+        CheckBox checkOvalBox = findViewById(R.id.check_oval);
+        checkOvalBox.setChecked(mRoundedImageView.isOval());
+        checkOvalBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mRoundedImageView.setOval(isChecked);
+            }
+        });
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (!fromUser) return;
         switch (seekBar.getId()) {
             case R.id.stroke_seek_bar:
                 mRoundedImageView.setBorderSize(progress);
@@ -64,7 +87,8 @@ public class RoundedImageActivity extends AppCompatActivity implements SeekBar.O
     }
 
     private int getProgressRadius(int progress) {
-        return (int) ((float) progress / 100 * mRoundedImageView.getWidth()) / 2;
+        ViewGroup.LayoutParams p = mRoundedImageView.getLayoutParams();
+        return (int) ((float) progress / 100 * p.width) / 2;
     }
 
     @Override
