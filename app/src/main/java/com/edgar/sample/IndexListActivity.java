@@ -10,6 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Edgar on 2018/12/28.
  * Sample list
@@ -17,43 +20,30 @@ import android.widget.ListView;
 public class IndexListActivity extends AppCompatActivity {
 
     private ListView mIndexListView;
+    private List<IndexItem> mIndexItems = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initIndexList();
         setContentView(R.layout.index_list_activity);
         mIndexListView = findViewById(R.id.index_list);
-        mIndexListView.setAdapter(new ArrayAdapter<String>(this,R.layout.index_list_item,android.R.id.text1,
-                getResources().getStringArray(R.array.sample_index)));
+        mIndexListView.setAdapter(new ArrayAdapter<IndexItem>(this,R.layout.index_list_item,android.R.id.text1,
+                mIndexItems));
         mIndexListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                handlerItemClick(position);
+                IndexItem indexItem = mIndexItems.get(position);
+                startActivity(indexItem.getActivityClass());
             }
         });
     }
 
-    private void handlerItemClick(int position) {
-        switch (position) {
-            case 0:
-                startActivity(SwitchActivity.class);
-                break;
-            case 1:
-                startActivity(DotTextActivity.class);
-                break;
-            case 2:
-                startActivity(RoundedImageActivity.class);
-                break;
-            case 3:
-                startActivity(TabPageSampleActivity.class);
-                break;
-            case 4:
-                startActivity(ImageTransitionActivity.class);
-                break;
-            case 5:
-                startActivity(TriangleActivity.class);
-                break;
-        }
+    private void initIndexList() {
+        mIndexItems.add(new IndexItem(getString(R.string.switch_sample),SwitchActivity.class));
+        mIndexItems.add(new IndexItem(getString(R.string.dottext_sample),DotTextActivity.class));
+        mIndexItems.add(new IndexItem(getString(R.string.rounded_image_sample),RoundedImageActivity.class));
+        mIndexItems.add(new IndexItem(getString(R.string.material_button),MaterialButtonActivity.class));
     }
 
     private void startActivity(Class<? extends Activity> clazz) {

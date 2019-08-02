@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/material_btn"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        style="?attr/textAppearanceButton"
+        android:stateListAnimator="@null"
+        app:backgroundTint="@color/button_background"
+        android:text="@string/material_button"
+        android:layout_gravity="center_horizontal"
+        app:cornerRadius="30dp"
+        app:elevation="30dp"
+        app:iconGravity="textStart"
+        app:icon="@drawable/ic_setting_radar"
+        app:iconTintMode="screen"
+        app:iconTint="@android:color/transparent" />
+</LinearLayout>

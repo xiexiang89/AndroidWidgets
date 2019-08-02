@@ -24,12 +24,9 @@
             android:label="@string/rounded_image_sample"/>
         <activity android:name=".DotTextActivity"
             android:label="@string/dottext_sample"/>
-        <activity android:name=".TabPageSampleActivity"
-            android:label="@string/tab_page_sample"/>
-        <activity android:name=".ImageTransitionActivity"
-            android:label="@string/image_transition"/>
-        <activity android:name=".TriangleActivity"
-            android:label="@string/triangle"/>
+        <activity android:name=".MaterialButtonActivity"
+            android:label="@string/material_button"
+            android:theme="@style/MaterialTheme"/>
     </application>
 
 </manifest>
